@@ -6,7 +6,7 @@ class projectController {
     try {
       const { title, techstack, url, desc, img } = req.body;
 
-      if ((!title, !techstack, !url, !desc, !img)) {
+      if ((!title, !techstack, !url, !desc)) {
         return res.status(HTTPStatusCode.Bad_Request).json({
           success: false,
           message: "All fields are required",
