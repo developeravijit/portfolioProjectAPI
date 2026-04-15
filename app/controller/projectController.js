@@ -4,9 +4,9 @@ const HTTPStatusCode = require("../utils/http");
 class projectController {
   async createProject(req, res) {
     try {
-      const { title, techstack, url, desc, img } = req.body;
+      const { title, techstack, url, desc } = req.body;
 
-      if ((!title, !techstack, !url, !desc)) {
+      if (!title || !techstack || !url || !desc) {
         return res.status(HTTPStatusCode.Bad_Request).json({
           success: false,
           message: "All fields are required",
@@ -27,8 +27,11 @@ class projectController {
         techstack,
         url,
         desc,
-        img,
       });
+
+      if (req.file) {
+        projectData.image = req.file.path;
+      }
 
       const result = await projectData.save();
 
