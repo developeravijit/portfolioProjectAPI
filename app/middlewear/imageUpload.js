@@ -13,15 +13,15 @@ const storage = multer.diskStorage({
     const isValid = File_type[file.mimetype];
     let uploadError = new Error("Invalid file type");
 
-    if (isValid) {
-      uploadError = null;
+    if (!isValid) {
+      return cb(new Error("Invalid file type"), false);
     }
-    cb(uploadError, "uploads");
+    cb(null, "uploads");
   },
   filename: (req, file, cb) => {
     const filename = file.originalname.split(" ").join("-");
     const extention = File_type[file.mimetype];
-    cb(null, `${filename}-${Date.now}.${extention}`);
+    cb(null, `${filename}-${Date.now()}.${extention}`);
   },
 });
 

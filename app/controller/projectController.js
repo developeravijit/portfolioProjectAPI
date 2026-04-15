@@ -1,5 +1,14 @@
 const projectModel = require("../model/projectModel");
 const HTTPStatusCode = require("../utils/http");
+const fs = require("fs");
+
+const deleteFile = (filePath) => {
+  try {
+    if (filePath) fs.unlinkSync(filePath);
+  } catch (err) {
+    console.log("File delete error:", err);
+  }
+};
 
 class projectController {
   async createProject(req, res) {
@@ -7,6 +16,7 @@ class projectController {
       const { title, techstack, url, desc } = req.body;
 
       if (!title || !techstack || !url || !desc) {
+        deleteFile(req.file?.path);
         return res.status(HTTPStatusCode.Bad_Request).json({
           success: false,
           message: "All fields are required",
@@ -16,6 +26,7 @@ class projectController {
       const existingProject = await projectModel.findOne({ title });
 
       if (existingProject) {
+        deleteFile(req.file?.path);
         return res.status(HTTPStatusCode.Bad_Request).json({
           success: false,
           message: "Project is already created",
@@ -27,22 +38,19 @@ class projectController {
         techstack,
         url,
         desc,
+        image: req.file ? `/uploads/${req.file.filename}` : "",
       });
-
-      if (req.file) {
-        projectData.image = req.file.path;
-      }
 
       const result = await projectData.save();
 
-      if (result) {
-        return res.status(HTTPStatusCode.Created).json({
-          success: true,
-          message: "New Project Created",
-          data: result,
-        });
-      }
+      return res.status(HTTPStatusCode.Created).json({
+        success: true,
+        message: "New Project Created",
+        data: result,
+      });
     } catch (error) {
+      deleteFile(req.file?.path);
+
       return res.status(HTTPStatusCode.Server_Error).json({
         success: false,
         message: error.message,

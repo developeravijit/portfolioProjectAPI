@@ -4,6 +4,7 @@ const DbConnect = require("./app/config/database");
 const router = require("./app/routes/projectRoutes");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 
 const app = express();
 
@@ -14,6 +15,12 @@ app.use(express.json());
 
 // Static Folder
 app.use(express.static(path.join(__dirname, "/uploads")));
+
+const uploadPath = path.join(__dirname, "uploads");
+
+if (!fs.existsSync(uploadPath)) {
+  fs.mkdirSync(uploadPath);
+}
 
 // Define Cross Origin
 app.use(cors());
